@@ -12,6 +12,7 @@ class Vehicle extends Model {
   public price!: number;
   public images!: string[];
   public description!: string;
+  public userId!: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -61,6 +62,14 @@ Vehicle.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+    },
   },
   {
     sequelize,
@@ -69,5 +78,10 @@ Vehicle.init(
     timestamps: true,
   }
 );
+
+// Define associations
+import User from './User';
+Vehicle.belongsTo(User, { foreignKey: 'userId', as: 'creator' });
+User.hasMany(Vehicle, { foreignKey: 'userId', as: 'vehicles' });
 
 export default Vehicle;

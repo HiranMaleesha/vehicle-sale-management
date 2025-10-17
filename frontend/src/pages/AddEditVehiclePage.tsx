@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { vehicleService } from '../services/api';
+import api from '../services/api';
 import { VehicleFormData, Vehicle } from '../types';
 
 const AddEditVehiclePage: React.FC = () => {
@@ -81,11 +82,19 @@ const AddEditVehiclePage: React.FC = () => {
   const generateDescription = async () => {
     setGeneratingDescription(true);
     try {
-      // For now, we'll use a simple description generation
-      const description = `${formData.year} ${formData.brand} ${formData.modelName} - A ${formData.color.toLowerCase()} ${formData.vehicleType.toLowerCase()} with ${formData.engineSize} engine. This vehicle offers excellent performance and reliability.`;
-      setFormData(prev => ({ ...prev, description }));
-    } catch (err) {
-      setError('Failed to generate description');
+      const response = await api.post('/api/vehicles/generate-description', {
+        vehicleType: formData.vehicleType,
+        brand: formData.brand,
+        modelName: formData.modelName,
+        color: formData.color,
+        engineSize: formData.engineSize,
+        year: formData.year,
+        price: formData.price,
+      });
+
+      setFormData(prev => ({ ...prev, description: response.data.description }));
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to generate description');
     } finally {
       setGeneratingDescription(false);
     }

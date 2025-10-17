@@ -52,6 +52,7 @@ export const createVehicle = async (req: AuthRequest, res: Response) => {
       price,
       images: images || [],
       description: finalDescription,
+      userId: req.user?.id, // Add the authenticated user's ID
     });
 
     res.status(201).json({
