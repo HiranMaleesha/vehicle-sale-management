@@ -50,7 +50,7 @@ export const createVehicle = async (req: AuthRequest, res: Response) => {
       engineSize,
       year,
       price,
-      images: images || [],
+      images: Array.isArray(images) ? images : [],
       description: finalDescription,
       userId: req.user?.id, // Add the authenticated user's ID
     });

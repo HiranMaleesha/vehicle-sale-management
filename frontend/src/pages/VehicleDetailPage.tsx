@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { vehicleService } from '../services/api';
 import { Vehicle } from '../types';
+import ImageGallery from '../components/ImageGallery';
 
 const VehicleDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +31,7 @@ const VehicleDetailPage: React.FC = () => {
   };
 
   const nextImage = () => {
-    if (vehicle?.images && vehicle.images.length > 0) {
+    if (vehicle?.images && Array.isArray(vehicle.images) && vehicle.images.length > 0) {
       setCurrentImageIndex((prev) =>
         prev === vehicle.images.length - 1 ? 0 : prev + 1
       );
@@ -38,7 +39,7 @@ const VehicleDetailPage: React.FC = () => {
   };
 
   const prevImage = () => {
-    if (vehicle?.images && vehicle.images.length > 0) {
+    if (vehicle?.images && Array.isArray(vehicle.images) && vehicle.images.length > 0) {
       setCurrentImageIndex((prev) =>
         prev === 0 ? vehicle.images.length - 1 : prev - 1
       );
@@ -84,42 +85,14 @@ const VehicleDetailPage: React.FC = () => {
         {/* Image Gallery */}
         <div className="space-y-4">
           <div className="relative h-96 bg-gray-200 rounded-lg overflow-hidden">
-            {vehicle.images && vehicle.images.length > 0 ? (
-              <>
-                <img
-                  src={vehicle.images[currentImageIndex]}
-                  alt={`${vehicle.brand} ${vehicle.modelName}`}
-                  className="w-full h-full object-cover"
-                />
-                {vehicle.images.length > 1 && (
-                  <>
-                    <button
-                      onClick={prevImage}
-                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
-                    >
-                      ‹
-                    </button>
-                    <button
-                      onClick={nextImage}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
-                    >
-                      ›
-                    </button>
-                  </>
-                )}
-              </>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center text-gray-400">
-                  <div className="text-6xl mb-4">🚗</div>
-                  <div className="text-xl">No Images Available</div>
-                </div>
-              </div>
-            )}
+            <ImageGallery
+              images={vehicle.images || []}
+              alt={`${vehicle.brand} ${vehicle.modelName}`}
+            />
           </div>
 
           {/* Thumbnail Gallery */}
-          {vehicle.images && vehicle.images.length > 1 && (
+          {vehicle.images && Array.isArray(vehicle.images) && vehicle.images.length > 1 && (
             <div className="flex space-x-2 overflow-x-auto">
               {vehicle.images.map((image, index) => (
                 <button

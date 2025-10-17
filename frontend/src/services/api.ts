@@ -104,6 +104,21 @@ export const vehicleService = {
     const response = await api.delete(`/api/vehicles/${id}`);
     return response.data;
   },
+
+  uploadVehicleImages: async (vehicleId: number, images: File[]): Promise<{ images: string[]; totalImages: number; message: string }> => {
+    const formData = new FormData();
+    images.forEach(image => formData.append('images', image));
+
+    const response = await api.post(`/api/vehicles/${vehicleId}/upload-images`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  },
+
+  deleteVehicleImage: async (vehicleId: number, imageIndex: number): Promise<{ message: string }> => {
+    const response = await api.delete(`/api/vehicles/${vehicleId}/images/${imageIndex}`);
+    return response.data;
+  },
 };
 
 export default api;

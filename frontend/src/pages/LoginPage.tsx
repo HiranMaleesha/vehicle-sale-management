@@ -21,6 +21,8 @@ const LoginPage: React.FC = () => {
       const response = await authService.login(credentials);
       localStorage.setItem('authToken', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
+      // Dispatch custom event to update navbar state
+      window.dispatchEvent(new Event('authChange'));
       navigate('/admin');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');

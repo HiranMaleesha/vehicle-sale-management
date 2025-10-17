@@ -24,7 +24,8 @@ const AddEditVehiclePage: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [generatingDescription, setGeneratingDescription] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   useEffect(() => {
     if (isEditing && id) {
@@ -62,22 +63,42 @@ const AddEditVehiclePage: React.FC = () => {
     }));
   };
 
-  const handleAddImage = () => {
-    if (imageUrl.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, imageUrl.trim()],
-      }));
-      setImageUrl('');
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setSelectedImages(prev => [...prev, ...files]);
+
+      // Create preview URLs
+      const newPreviews = files.map(file => URL.createObjectURL(file));
+      setImagePreviews(prev => [...prev, ...newPreviews]);
+
+      // Convert to base64 for form data (you might want to upload to a service instead)
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const base64 = event.target?.result as string;
+          setFormData(prev => ({
+            ...prev,
+            images: [...prev.images, base64],
+          }));
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
 
   const handleRemoveImage = (index: number) => {
+    // Clean up preview URL
+    URL.revokeObjectURL(imagePreviews[index]);
+
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
     setFormData(prev => ({
       ...prev,
       images: prev.images.filter((_, i) => i !== index),
     }));
   };
+
 
   const generateDescription = async () => {
     setGeneratingDescription(true);
@@ -109,7 +130,16 @@ const AddEditVehiclePage: React.FC = () => {
       if (isEditing && id) {
         await vehicleService.updateVehicle(parseInt(id), formData);
       } else {
-        await vehicleService.createVehicle(formData);
+        // Create vehicle first (without images)
+        const vehicleResponse = await vehicleService.createVehicle({
+          ...formData,
+          images: [], // Don't send images in create request
+        });
+
+        // Then upload images if any
+        if (selectedImages.length > 0) {
+          await vehicleService.uploadVehicleImages(vehicleResponse.vehicle.id, selectedImages);
+        }
       }
       navigate('/admin');
     } catch (err: any) {
@@ -267,29 +297,25 @@ const AddEditVehiclePage: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Images
           </label>
-          <div className="flex gap-2 mb-4">
+          <div className="mb-4">
             <input
-              type="url"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="Enter image URL"
-              className="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
-            <button
-              type="button"
-              onClick={handleAddImage}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Add Image
-            </button>
+            <p className="mt-1 text-sm text-gray-500">
+              Select multiple images for the vehicle
+            </p>
           </div>
 
-          {formData.images.length > 0 && (
+          {imagePreviews.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              {formData.images.map((image, index) => (
+              {imagePreviews.map((preview, index) => (
                 <div key={index} className="relative">
                   <img
-                    src={image}
+                    src={preview}
                     alt={`Vehicle ${index + 1}`}
                     className="w-full h-24 object-cover rounded border"
                   />
