@@ -6,6 +6,11 @@ import {
   Navigate,
 } from 'react-router-dom';
 import { authService } from './services/api';
+import LoginPage from './pages/LoginPage';
+import VehicleListPage from './pages/VehicleListPage';
+import VehicleDetailPage from './pages/VehicleDetailPage';
+import AdminDashboard from './pages/AdminDashboard';
+import AddEditVehiclePage from './pages/AddEditVehiclePage';
 
 const App: React.FC = () => {
   const isAuthenticated = authService.isAuthenticated();
@@ -80,86 +85,36 @@ const App: React.FC = () => {
             />
             <Route
               path='/vehicles'
-              element={
-                <div className='text-center py-12'>
-                  <h2 className='text-3xl font-bold text-gray-800'>
-                    Vehicle List
-                  </h2>
-                  <p className='text-gray-600 mt-4'>Coming soon...</p>
-                </div>
-              }
+              element={<VehicleListPage />}
             />
             <Route
               path='/vehicles/:id'
-              element={
-                <div className='text-center py-12'>
-                  <h2 className='text-3xl font-bold text-gray-800'>
-                    Vehicle Details
-                  </h2>
-                  <p className='text-gray-600 mt-4'>Coming soon...</p>
-                </div>
-              }
+              element={<VehicleDetailPage />}
             />
 
             {/* Admin Routes */}
             <Route
               path='/login'
               element={
-                isAuthenticated ? (
-                  <Navigate to='/admin' replace />
-                ) : (
-                  <div className='text-center py-12'>
-                    <h2 className='text-3xl font-bold text-gray-800'>
-                      Admin Login
-                    </h2>
-                    <p className='text-gray-600 mt-4'>Coming soon...</p>
-                  </div>
-                )
+                isAuthenticated ? <Navigate to='/admin' replace /> : <LoginPage />
               }
             />
             <Route
               path='/admin'
               element={
-                isAuthenticated && isAdmin ? (
-                  <div className='text-center py-12'>
-                    <h2 className='text-3xl font-bold text-gray-800'>
-                      Admin Dashboard
-                    </h2>
-                    <p className='text-gray-600 mt-4'>Coming soon...</p>
-                  </div>
-                ) : (
-                  <Navigate to='/login' replace />
-                )
+                isAuthenticated && isAdmin ? <AdminDashboard /> : <Navigate to='/login' replace />
               }
             />
             <Route
               path='/admin/vehicles/add'
               element={
-                isAuthenticated && isAdmin ? (
-                  <div className='text-center py-12'>
-                    <h2 className='text-3xl font-bold text-gray-800'>
-                      Add Vehicle
-                    </h2>
-                    <p className='text-gray-600 mt-4'>Coming soon...</p>
-                  </div>
-                ) : (
-                  <Navigate to='/login' replace />
-                )
+                isAuthenticated && isAdmin ? <AddEditVehiclePage /> : <Navigate to='/login' replace />
               }
             />
             <Route
               path='/admin/vehicles/edit/:id'
               element={
-                isAuthenticated && isAdmin ? (
-                  <div className='text-center py-12'>
-                    <h2 className='text-3xl font-bold text-gray-800'>
-                      Edit Vehicle
-                    </h2>
-                    <p className='text-gray-600 mt-4'>Coming soon...</p>
-                  </div>
-                ) : (
-                  <Navigate to='/login' replace />
-                )
+                isAuthenticated && isAdmin ? <AddEditVehiclePage /> : <Navigate to='/login' replace />
               }
             />
 
