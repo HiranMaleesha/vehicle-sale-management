@@ -49,34 +49,42 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className='bg-white shadow-lg'>
+    <nav className='bg-gradient-to-r from-emerald-400 to-teal-500 shadow-xl backdrop-blur-sm bg-opacity-95'>
       <div className='container mx-auto px-4'>
         <div className='flex justify-between items-center py-4'>
-          <div className='flex items-center space-x-4'>
-            <Link to='/' className='text-2xl font-bold text-blue-600'>
-              Vehicle Sales
+          <div className='flex items-center space-x-6'>
+            <Link to='/' className='text-2xl font-bold text-white hover:text-yellow-300 transition-colors duration-200 flex items-center space-x-2'>
+            
+              <span>VehicleHub</span>
             </Link>
-            <Link to='/' className='text-gray-600 hover:text-blue-600'>
-              Browse
-            </Link>
-            {isAuthenticated && isAdmin && (
+            <div className='hidden md:flex items-center space-x-6'>
               <Link
-                to='/admin'
-                className='text-gray-600 hover:text-blue-600'
+                to='/'
+                className='text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg transition-all duration-200 font-medium'
               >
-                Admin
+                Browse Vehicles
               </Link>
-            )}
+              {isAuthenticated && isAdmin && (
+                <Link
+                  to='/admin'
+                  className='text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg transition-all duration-200 font-medium flex items-center space-x-1'
+                >
+                  
+                  <span>Admin Panel</span>
+                </Link>
+              )}
+            </div>
           </div>
           <div className='flex items-center space-x-4'>
             {isAuthenticated ? (
               <div className='flex items-center space-x-4'>
-                <span className='text-gray-600'>
-                  Welcome, {currentUser?.username}
-                </span>
+                <div className='hidden md:flex items-center space-x-2 text-white/90'>
+                  <span className='text-sm'>👋</span>
+                  <span className='font-medium'>Welcome, {currentUser?.username}</span>
+                </div>
                 <button
                   onClick={handleLogout}
-                  className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600'
+                  className='bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                 >
                   Logout
                 </button>
@@ -84,9 +92,9 @@ const Navbar: React.FC = () => {
             ) : (
               <Link
                 to='/login'
-                className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
+                className='bg-white text-green-600 hover:bg-gray-50 px-6 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2'
               >
-                Admin Login
+                <span>Admin Login</span>
               </Link>
             )}
           </div>

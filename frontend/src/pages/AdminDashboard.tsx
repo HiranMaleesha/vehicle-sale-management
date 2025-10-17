@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { vehicleService } from '../services/api';
-import { Vehicle } from '../types';
+import { Vehicle, VehicleFilters } from '../types';
 
 const AdminDashboard: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deleteLoading, setDeleteLoading] = useState<number | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<VehicleFilters>({});
 
   useEffect(() => {
     fetchVehicles();
@@ -16,13 +18,40 @@ const AdminDashboard: React.FC = () => {
   const fetchVehicles = async () => {
     try {
       setLoading(true);
-      const response = await vehicleService.getVehicles(1, 50); // Get all vehicles for admin
+      const response = await vehicleService.getVehicles(1, 50, filters); // Get all vehicles for admin with filters
       setVehicles(response.vehicles);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load vehicles');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFilterChange = (key: keyof VehicleFilters, value: string | number) => {
+    const newFilters = {
+      ...filters,
+      [key]: value || undefined,
+    };
+    setFilters(newFilters);
+    // Refetch vehicles with new filters
+    fetchVehiclesWithFilters(newFilters);
+  };
+
+  const fetchVehiclesWithFilters = async (filterParams: VehicleFilters) => {
+    try {
+      setLoading(true);
+      const response = await vehicleService.getVehicles(1, 50, filterParams);
+      setVehicles(response.vehicles);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to load vehicles');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearFilters = () => {
+    setFilters({});
+    fetchVehicles();
   };
 
   const handleDelete = async (id: number) => {
@@ -69,6 +98,92 @@ const AdminDashboard: React.FC = () => {
           {error}
         </div>
       )}
+
+      {/* Filter Section */}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">Filter Vehicles</h2>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="bg-emerald-500 text-white px-4 py-2 rounded hover:bg-emerald-600 transition-colors"
+          >
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </button>
+        </div>
+
+        {showFilters && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <input
+              type="text"
+              placeholder="Brand"
+              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              value={filters.brand || ''}
+              onChange={(e) => handleFilterChange('brand', e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Model"
+              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              value={filters.modelName || ''}
+              onChange={(e) => handleFilterChange('modelName', e.target.value)}
+            />
+            <select
+              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              value={filters.vehicleType || ''}
+              onChange={(e) => handleFilterChange('vehicleType', e.target.value)}
+            >
+              <option value="">All Types</option>
+              <option value="Car">Car</option>
+              <option value="Bike">Bike</option>
+              <option value="SUV">SUV</option>
+            </select>
+            <input
+              type="text"
+              placeholder="Color"
+              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              value={filters.color || ''}
+              onChange={(e) => handleFilterChange('color', e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Min Price"
+              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              value={filters.minPrice || ''}
+              onChange={(e) => handleFilterChange('minPrice', parseInt(e.target.value))}
+            />
+            <input
+              type="number"
+              placeholder="Max Price"
+              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              value={filters.maxPrice || ''}
+              onChange={(e) => handleFilterChange('maxPrice', parseInt(e.target.value))}
+            />
+            <input
+              type="number"
+              placeholder="Min Year"
+              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              value={filters.minYear || ''}
+              onChange={(e) => handleFilterChange('minYear', parseInt(e.target.value))}
+            />
+            <input
+              type="number"
+              placeholder="Max Year"
+              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              value={filters.maxYear || ''}
+              onChange={(e) => handleFilterChange('maxYear', parseInt(e.target.value))}
+            />
+          </div>
+        )}
+
+        {Object.keys(filters).some(key => filters[key as keyof VehicleFilters]) && (
+          <button
+            onClick={clearFilters}
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
+          >
+            Clear Filters
+          </button>
+        )}
+      </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -162,7 +277,7 @@ const AdminDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-lg font-semibold text-green-600">
-                        ${vehicle.price.toLocaleString()}
+                        Rs {vehicle.price.toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">

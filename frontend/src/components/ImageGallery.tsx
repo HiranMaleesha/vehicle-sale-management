@@ -28,7 +28,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, alt }) => {
     return (
       <div className="w-full h-full flex items-center justify-center bg-gray-200">
         <div className="text-center text-gray-400">
-          <div className="text-6xl mb-4">🚗</div>
           <div className="text-xl">No Images Available</div>
         </div>
       </div>

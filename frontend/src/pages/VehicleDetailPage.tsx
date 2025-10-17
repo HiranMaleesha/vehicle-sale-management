@@ -132,8 +132,8 @@ const VehicleDetailPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="text-4xl font-bold text-blue-600">
-            ${vehicle.price.toLocaleString()}
+          <div className="text-4xl font-bold text-emerald-600">
+            Rs {vehicle.price.toLocaleString()}
           </div>
 
           {/* Specifications */}
