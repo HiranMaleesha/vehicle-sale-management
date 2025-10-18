@@ -62,6 +62,12 @@ A full-stack web application for managing vehicle sales with AI-powered descript
    NODE_ENV=development
    ```
 
+5.**admin user**
+   -for now automatically created admin user on server startup temporarily,this is not a secured way , but for testing purposes I used this way, as we are not using a signup, we can use role base login for this instead of this.
+   admin user credentials
+     - username:  admin
+     -password: admin123  
+
 4. **Database Setup:**
    - Create a MySQL database named `vehicle_sales_development`
    - The application will automatically create tables using Sequelize migrations
@@ -123,6 +129,8 @@ A full-stack web application for managing vehicle sales with AI-powered descript
 - Images are stored locally in the `uploads/vehicles/` directory
 - OpenAI API key is required for AI description generation
 - MySQL database is pre-configured and accessible
+- **Temporary Setup**: Default admin user (username: `admin`, password: `admin123`) is automatically created on server startup for development purposes
+this is not a secured way , but for testing purposes I used this way, as we are not using a signup, we can use role base login for this instead of this.
 
 ### Limitations
 - **Storage**: Local file storage (not suitable for production - AWS S3/Firebase would be better)
