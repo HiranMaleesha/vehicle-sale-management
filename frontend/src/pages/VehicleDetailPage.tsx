@@ -184,7 +184,7 @@ const VehicleDetailPage: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center text-gray-600">
                 <span className="font-medium w-20">Phone:</span>
-                <span>+1 (555) 123-4567</span>
+                <span>+94 7444444</span>
               </div>
               <div className="flex items-center text-gray-600">
                 <span className="font-medium w-20">Email:</span>

@@ -45,15 +45,12 @@ const VehicleListPage: React.FC = () => {
           </p>
           <div className="flex items-center space-x-4 text-sm">
             <div className="flex items-center space-x-1">
-              <span className="text-yellow-300">⭐</span>
               <span>Quality Assured</span>
             </div>
             <div className="flex items-center space-x-1">
-              <span className="text-green-300">🤖</span>
               <span>AI Descriptions</span>
             </div>
             <div className="flex items-center space-x-1">
-              <span className="text-blue-300">🔍</span>
               <span>Advanced Search</span>
             </div>
           </div>
@@ -65,9 +62,6 @@ const VehicleListPage: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1">
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                🔍
-              </span>
               <input
                 type="text"
                 placeholder="Search by brand, model, or color..."

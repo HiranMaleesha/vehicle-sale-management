@@ -57,6 +57,19 @@ Vehicle.init(
       type: DataTypes.JSON,
       allowNull: true,
       defaultValue: [],
+      get() {
+        const raw = this.getDataValue('images');
+        if (Array.isArray(raw)) return raw;
+        if (typeof raw === 'string') {
+          try {
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+          } catch {
+            return [];
+          }
+        }
+        return [];
+      }
     },
     description: {
       type: DataTypes.TEXT,
