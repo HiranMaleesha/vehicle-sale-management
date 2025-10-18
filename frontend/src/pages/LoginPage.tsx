@@ -25,7 +25,11 @@ const LoginPage: React.FC = () => {
       window.dispatchEvent(new Event('authChange'));
       navigate('/admin');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
+      if (err.response?.status === 401) {
+        setError('Invalid username or password. Please try again.');
+      } else {
+        setError(err.response?.data?.message || 'Login failed');
+      }
     } finally {
       setLoading(false);
     }
