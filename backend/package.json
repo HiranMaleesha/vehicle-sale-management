@@ -2,7 +2,7 @@
   "name": "vehicle-sales-management-backend",
   "version": "1.0.0",
   "description": "Backend for Vehicle Sales Management System",
-  "main": "dist/server.js",
+  "main": "dist/src/server.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
