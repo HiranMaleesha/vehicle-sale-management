@@ -54,6 +54,9 @@ A full-stack web application for managing vehicle sales with AI-powered descript
    DB_USER=root
    DB_PASSWORD=your_password
 
+   #JWT Configuration
+   JWT_SECRET=your_jwt_secret_here
+
    # OpenAI Configuration
    OPENAI_API_KEY=your_openai_api_key_here
 
