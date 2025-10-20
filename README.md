@@ -60,6 +60,10 @@ A full-stack web application for managing vehicle sales with AI-powered descript
    # Server Configuration
    PORT=5000
    NODE_ENV=development
+
+   # Admin User
+   username=admin
+   password=admin123
    ```
 
 5.**admin user**
