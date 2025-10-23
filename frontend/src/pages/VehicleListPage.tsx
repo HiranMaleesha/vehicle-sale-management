@@ -4,11 +4,13 @@ import { VehicleFilters } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 import VehicleCard from '../components/VehicleCard';
 import VehicleListItem from '../components/VehicleListItem';
+import VehicleComparison from '../components/VehicleComparison';
 
 const VehicleListPage: React.FC = () => {
-  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<VehicleFilters>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedVehicles, setSelectedVehicles] = useState<number[]>([]);
+  const [showComparison, setShowComparison] = useState(false);
 
   const {
     vehicles,
@@ -32,8 +34,45 @@ const VehicleListPage: React.FC = () => {
     updateFilters(newFilters);
   };
 
+  const handleVehicleSelect = (vehicleId: number) => {
+    setSelectedVehicles(prev => {
+      if (prev.includes(vehicleId)) {
+        return prev.filter(id => id !== vehicleId);
+      } else if (prev.length < 3) {
+        return [...prev, vehicleId];
+      }
+      return prev;
+    });
+  };
+
+  const handleCompare = () => {
+    setShowComparison(true);
+  };
+
+  const handleBackToList = () => {
+    setShowComparison(false);
+  };
+
   if (loading && vehicles.length === 0) {
     return <LoadingSpinner size='lg' className='min-h-64' />;
+  }
+
+  if (showComparison) {
+    const comparisonVehicles = vehicles.filter(vehicle => selectedVehicles.includes(vehicle.id));
+    return (
+      <div className='space-y-8'>
+        <div className='flex items-center justify-between'>
+          <h1 className='text-3xl font-bold text-gray-900'>Vehicle Comparison</h1>
+          <button
+            onClick={handleBackToList}
+            className='px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+          >
+            ← Back to List
+          </button>
+        </div>
+        <VehicleComparison vehicles={comparisonVehicles} />
+      </div>
+    );
   }
 
   return (
@@ -154,11 +193,19 @@ const VehicleListPage: React.FC = () => {
         </div>
       )}
 
-      {/* Results Summary */}
-      <div className='mb-6'>
+      {/* Results Summary and Compare Button */}
+      <div className='mb-6 flex justify-between items-center'>
         <p className='text-gray-600'>
           Showing {vehicles.length} of {pagination.total} vehicles
         </p>
+        {selectedVehicles.length > 0 && (
+          <button
+            onClick={handleCompare}
+            className='px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+          >
+            Compare ({selectedVehicles.length}) →
+          </button>
+        )}
       </div>
 
       {/* Vehicle Display */}
@@ -172,13 +219,25 @@ const VehicleListPage: React.FC = () => {
       ) : viewMode === 'grid' ? (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
           {vehicles.map((vehicle) => (
-            <VehicleCard key={vehicle.id} vehicle={vehicle} />
+            <VehicleCard
+              key={vehicle.id}
+              vehicle={vehicle}
+              isSelected={selectedVehicles.includes(vehicle.id)}
+              onSelect={() => handleVehicleSelect(vehicle.id)}
+              maxSelected={selectedVehicles.length >= 3 && !selectedVehicles.includes(vehicle.id)}
+            />
           ))}
         </div>
       ) : (
         <div className='space-y-4'>
           {vehicles.map((vehicle) => (
-            <VehicleListItem key={vehicle.id} vehicle={vehicle} />
+            <VehicleListItem
+              key={vehicle.id}
+              vehicle={vehicle}
+              isSelected={selectedVehicles.includes(vehicle.id)}
+              onSelect={() => handleVehicleSelect(vehicle.id)}
+              maxSelected={selectedVehicles.length >= 3 && !selectedVehicles.includes(vehicle.id)}
+            />
           ))}
         </div>
       )}

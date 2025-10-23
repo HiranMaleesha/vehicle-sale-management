@@ -4,12 +4,34 @@ import { Vehicle } from '../types';
 
 interface VehicleCardProps {
   vehicle: Vehicle;
+  isSelected?: boolean;
+  onSelect?: () => void;
+  maxSelected?: boolean;
 }
 
-const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
+const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, isSelected = false, onSelect, maxSelected = false }) => {
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+    <div className={`bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 ${isSelected ? 'ring-2 ring-blue-500' : ''}`}>
       <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
+        <div className="absolute top-3 right-3 z-10">
+          <button
+            onClick={onSelect}
+            disabled={maxSelected && !isSelected}
+            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+              isSelected
+                ? 'bg-blue-500 border-blue-500 text-white shadow-lg'
+                : maxSelected && !isSelected
+                ? 'bg-gray-300 border-gray-300 cursor-not-allowed opacity-60'
+                : 'bg-white/90 border-gray-300 hover:border-blue-400 cursor-pointer backdrop-blur-sm'
+            }`}
+          >
+            {isSelected && (
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            )}
+          </button>
+        </div>
         {vehicle.images && Array.isArray(vehicle.images) && vehicle.images.length > 0 ? (
           <img
             src={vehicle.images[0]}
